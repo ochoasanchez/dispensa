@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@plugin "daisyui"{
+
+  themes: light --default;
+
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url('assets/Lora-VariableFont_wght.ttf') format('ttf');
+}
+
+h1, .card-title {
+  font-family: 'Lora';
+}
