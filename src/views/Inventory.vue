@@ -2,9 +2,7 @@
   <BaseLayout title="Inventario">
     <!-- Header with 'Add New Item' Button and Quick Links -->
     <div class="grid grid-cols-2 gap-3 w-full items-center">
-      <InventoryQuickLinks  @open-new-item-modal="isModalOpen = true"/>
-      <!-- The 'Añadir Nuevo Artículo' button that will open the modal -->
-      <!-- <button class="btn btn-primary" @open-new-item-modal="isModalOpen = true">Añadir Nuevo Artículo</button> -->
+      <InventoryQuickLinks @open-new-item-modal="openModal()" />
     </div>
 
     <!-- Production Items Table -->
@@ -20,9 +18,9 @@
         </thead>
         <!-- Table Body -->
         <tbody>
-          <tr v-for="item in productionItems" :key="item.articulo" class="hover:bg-base-200 transition-colors duration-200">
-            <td>{{ item.articulo }}</td>
-            <td>{{ item.cantidad + ' ' + item.unidad }}</td>
+          <tr v-for="item in filteredProductionItems" :key="item.name" class="hover:bg-base-200 transition-colors duration-200">
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity + ' ' + item.unit }}</td>
           </tr>
         </tbody>
       </table>
@@ -43,48 +41,49 @@
         </thead>
         <!-- Table Body -->
         <tbody>
-          <tr v-for="item in restaurantItems" :key="item.articulo" class="hover:bg-base-200 transition-colors duration-200">
-            <td>{{ item.articulo }}</td>
-            <td>{{ item.cantidad + ' ' + item.unidad }}</td>
+          <tr v-for="item in filteredRestaurantItems" :key="item.name" class="hover:bg-base-200 transition-colors duration-200">
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity + ' ' + item.unit }}</td>
           </tr>
         </tbody>
       </table>
     </CardLayout>
-    <ModalNewItem :is-visible="isModalOpen" :current-step="modalStep" @close-modal="isModalOpen = false" @update-step="modalStep = $event" />
-
+    <!-- Use a template ref to get a reference to the child component -->
+    <ModalNewItem ref="modalRef" :current-step="modalStep" @update-step="modalStep = $event" />
   </BaseLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import BaseLayout from '../layouts/BaseLayout.vue';
 import InventoryQuickLinks from '../components/InventoryQuickLinks.vue';
 import CardLayout from '../layouts/CardLayout.vue';
 import ModalNewItem from '../components/ModalNewItem.vue';
+import { inventoryItems } from '../utils/stock';
 
-// Reactive state to control the modal's visibility
-const isModalOpen = ref(false);
+// Create a template ref to get a reference to the ModalNewItem component instance
+const modalRef = ref(null);
 
 // Reactive state to handle the steps inside the modal
 const modalStep = ref('options');
 
-// Placeholder data for the Production table
-const productionItems = ref([
-  { articulo: 'Harina de trigo', cantidad: 50, unidad: 'kg' },
-  { articulo: 'Azúcar', cantidad: 25, unidad: 'kg' },
-  { articulo: 'Aceite de oliva', cantidad: 10, unidad: 'litros' },
-  { articulo: 'Tomates enlatados', cantidad: 100, unidad: 'latas' },
-  { articulo: 'Albahaca fresca', cantidad: 2, unidad: 'atados' },
-]);
+// This function will now call the 'openModal' method on the child component
+const openModal = () => {
+  if (modalRef.value) {
+    modalRef.value.openModal();
+  }
+};
 
-// Placeholder data for the Restaurant table
-const restaurantItems = ref([
-  { articulo: 'Pasta fresca', cantidad: 15, unidad: 'kg' },
-  { articulo: 'Queso Parmesano', cantidad: 5, unidad: 'kg' },
-  { articulo: 'Carne molida', cantidad: 20, unidad: 'kg' },
-  { articulo: 'Salmón', cantidad: 8, unidad: 'kg' },
-  { articulo: 'Pan de ajo', cantidad: 30, unidad: 'unidades' },
-]);
+// Use a computed property to filter production items from the single source of truth
+const filteredProductionItems = computed(() => {
+  return inventoryItems.value.filter(item => item.location === 'production');
+});
+
+// Use a computed property to filter restaurant items from the single source of truth
+const filteredRestaurantItems = computed(() => {
+  return inventoryItems.value.filter(item => item.location === 'restaurant');
+});
+
 </script>
 
 <style scoped>

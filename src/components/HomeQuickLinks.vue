@@ -4,11 +4,11 @@
          <ShelvesIcon class="size-8"/>
     </CardQuickLink>
 
-    <CardQuickLink color="secondary" title="Producción">
+    <CardQuickLink color="secondary" title="Base">
         <FactoryIcon class="size-8" />
     </CardQuickLink>
 
-    <CardQuickLink color="accent" title="Consumo">
+    <CardQuickLink color="accent" title="Restaurant">
         <SkilletIcon class="size-8" />
     </CardQuickLink>
 

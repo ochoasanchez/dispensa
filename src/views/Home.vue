@@ -1,8 +1,9 @@
 <template>
     <BaseLayout title="Inicio">
-        <div class="grid grid-cols-2 gap-3 w-full">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full">
             <HomeQuickLinks />
 
+            <!-- TODO: Fix this and show 4 items per widget -->
             <ListLowStock class="col-span-2" :items="lowStockRestaurant" title="Stock bajo restaurant"/>
 
             <ListLowStock class="col-span-2" :items="lowStockProductionHouse" title="Stock bajo producción" />

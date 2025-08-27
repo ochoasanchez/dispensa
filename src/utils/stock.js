@@ -1,92 +1,61 @@
 import { ref } from 'vue';
 
-export const lowStockRestaurant = [
-    {
-      id: 1,
-      name: 'Salsa napolitana',
-      reason: '5 Litros',
-      initials: 'SN',
-      color: 'red'
-    },
-    {
-      id: 2,
-      name: 'Salsa blanca',
-      reason: '4 litros',
-      initials: 'SB',
-      color: 'white'
-    },
-    {
-      id: 3,
-      name: 'Salsa pesto',
-      reason: '1 litro',
-      initials: 'SP',
-      color: 'green'
-    },
-    {
-      id: 4,
-      name: 'Tortellini de carne',
-      reason: '4 kg',
-      initials: 'TC',
-      color: 'yellow'
-    },
-    {
-      id: 5,
-      name: 'Albondigas',
-      reason: '1.5 Kg',
-      initials: 'A',
-      color: 'red'
-    },
-    {
-      id: 6,
-      name: 'Tortellini de ricotta y espinaca',
-      reason: '4 kg',
-      initials: 'TRE',
-      color: 'yellow'
-    },
-  ];
+// A simple counter for generating unique IDs for the inventory entries
+let nextId = 1;
+
+// Define a list of ingredients with their default units.
+// This is your master data.
+export const ingredientList = ref([
+  { name: 'Harina de trigo', unit: 'kg' },
+  { name: 'Azúcar', unit: 'kg' },
+  { name: 'Aceite de oliva', unit: 'litros' },
+  { name: 'Tomates enlatados', unit: 'latas' },
+  { name: 'Albahaca fresca', unit: 'atados' },
+  { name: 'Pasta fresca', unit: 'kg' },
+  { name: 'Queso Parmesano', unit: 'kg' },
+  { name: 'Carne molida', unit: 'kg' },
+  { name: 'Salmón', unit: 'kg' },
+  { name: 'Pan de ajo', unit: 'unites' },
+]);
+
+// Single source of truth for all inventory items
+// We'll also update this to be a ref
+export const inventoryItems = ref([
+  { id: nextId++, name: 'Harina de trigo', quantity: 50, unit: 'kg', location: 'production' },
+  { id: nextId++, name: 'Azúcar', quantity: 25, unit: 'kg', location: 'production' },
+  { id: nextId++, name: 'Aceite de oliva', quantity: 10, unit: 'litros', location: 'production' },
+  { id: nextId++, name: 'Tomates enlatados', quantity: 100, unit: 'latas', location: 'production' },
+  { id: nextId++, name: 'Albahaca fresca', quantity: 2, unit: 'atados', location: 'production' },
+  { id: nextId++, name: 'Pasta fresca', quantity: 15, unit: 'kg', location: 'restaurant' },
+  { id: nextId++, name: 'Queso Parmesano', quantity: 5, unit: 'kg', location: 'restaurant' },
+  { id: nextId++, name: 'Carne molida', quantity: 20, unit: 'kg', location: 'restaurant' },
+  { id: nextId++, name: 'Salmón', quantity: 8, unit: 'kg', location: 'restaurant' },
+  { id: nextId++, name: 'Pan de ajo', quantity: 30, unit: 'unites', location: 'restaurant' },
+]);
 
 
-export const lowStockProductionHouse = [
-    {
-      id: 1,
-      name: 'Tomates',
-      reason: '8 Kg',
-      initials: 'T',
-      color: 'red'
-    },
-    {
-      id: 2,
-      name: 'Albahaca',
-      reason: '1 Kg',
-      initials: 'SB',
-      color: 'green'
-    },
-    {
-      id: 3,
-      name: 'Harina de trigo',
-      reason: '20 Kg',
-      initials: 'SP',
-      color: 'white'
-    },
-    {
-      id: 4,
-      name: 'Aceite vegetal',
-      reason: '4 Litros',
-      initials: 'AV',
-      color: 'yellow'
-    },
-    {
-      id: 5,
-      name: 'Pistacho',
-      reason: '1.2 Kg',
-      initials: 'P',
-      color: 'green'
-    },
-    {
-      id: 6,
-      name: 'Queso Parmesano',
-      reason: '4 kg',
-      initials: 'QP',
-      color: 'yellow'
-    },
-];
+// Production Items
+export const productionItems = inventoryItems.value
+  .filter(item => item.location === 'production')
+  .map(item => {
+    const { location, ...rest } = item;
+    return rest;
+  });
+
+// Restaurant Items
+export const restaurantItems = inventoryItems.value
+  .filter(item => item.location === 'restaurant')
+  .map(item => {
+    const { location, ...rest } = item;
+    return rest;
+  });
+
+// You will also need to update your lowStock lists to also be refs, 
+// so they are reactive if you want to update them later.
+export const lowStockRestaurant = ref([
+  // ... your lowStockRestaurant items
+]);
+
+export const lowStockProductionHouse = ref([
+  // ... your lowStockProductionHouse items
+]);
