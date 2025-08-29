@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import {  computed } from 'vue';
 import { supportedColors, colorClasses } from '../utils/colors';
 
 const props = defineProps({

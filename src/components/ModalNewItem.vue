@@ -34,7 +34,6 @@
           >
             <option value="" disabled selected>Seleccionar ingrediente</option>
             <option value="new-item">Nuevo ítem...</option>
-            <!-- Here is the fix: access the ref directly without .value -->
             <option
               v-for="ingredient in ingredientList"
               :key="ingredient.name"
@@ -146,47 +145,43 @@ import {
   ref,
   computed,
   watch,
-  defineProps,
-  defineEmits,
-  defineExpose,
 } from "vue";
 import { inventoryItems, ingredientList } from "../utils/stock";
 
-// Define props to receive state from the parent
 const props = defineProps({
   currentStep: {
     type: String,
     required: true,
   },
+  // The new prop to control modal visibility
+  isOpen: {
+    type: Boolean,
+    required: true
+  }
 });
 
-// Define events to communicate changes back to the parent
-const emit = defineEmits(["update-step", "add-item"]);
+const emit = defineEmits(["update-step", "add-item", "update:isOpen"]);
 
-// A template ref for the dialog element itself
 const dialogRef = ref(null);
-
-// Expose the methods the parent component will use to open and close the modal
-const openModal = () => {
-  if (dialogRef.value) {
-    dialogRef.value.showModal();
-    console.log("Modal is open");
-  }
-};
 
 const closeModal = () => {
   if (dialogRef.value) {
     dialogRef.value.close();
-    // We can also emit a close event for the parent to handle if needed,
-    // although the native close method is often sufficient.
-    emit("update-step", "options"); // Reset step when closing
+    // Emit the update event to notify the parent that the modal is closed
+    emit("update:isOpen", false);
   }
 };
 
-// Use defineExpose to make the methods available to the parent component
-defineExpose({
-  openModal,
-  closeModal,
+// Use a watcher to open or close the modal based on the isOpen prop
+watch(() => props.isOpen, (newVal) => {
+  if (dialogRef.value) {
+    if (newVal) {
+      dialogRef.value.showModal();
+    } else {
+      dialogRef.value.close();
+      emit("update-step", "options"); // Reset step when closing
+    }
+  }
 });
 
 // Reactive state for the form inputs
@@ -194,9 +189,8 @@ const selectedIngredientName = ref("");
 const newItemName = ref("");
 const quantity = ref(null);
 const unit = ref("");
-const location = ref(""); // New state variable for location
+const location = ref("");
 
-// Generate a new unique ID for each new item
 const getNextId = () => {
   const maxId = inventoryItems.value.reduce(
     (max, item) => (item.id > max ? item.id : max),
@@ -205,12 +199,10 @@ const getNextId = () => {
   return maxId + 1;
 };
 
-// Computed property to check if the "New item" text input should be shown
 const showNewItemInput = computed(
   () => selectedIngredientName.value === "new-item"
 );
 
-// Computed property to set the unit based on the selected ingredient
 const selectedUnit = computed(() => {
   const selected = ingredientList.value.find(
     (item) => item.name === selectedIngredientName.value
@@ -218,7 +210,6 @@ const selectedUnit = computed(() => {
   return selected ? selected.unit : "";
 });
 
-// Watch for changes in the selected ingredient and update the unit
 watch(selectedIngredientName, (newValue) => {
   if (newValue !== "new-item") {
     const selected = ingredientList.value.find(
@@ -228,7 +219,7 @@ watch(selectedIngredientName, (newValue) => {
       unit.value = selected.unit;
     }
   } else {
-    unit.value = ""; // Reset unit for new items
+    unit.value = "";
   }
 });
 
@@ -247,25 +238,18 @@ const handleFormSubmit = () => {
 
   finalLocation = location.value;
 
-  // Basic validation
   if (!finalItemName || !quantity.value || !finalUnit || !finalLocation) {
     alert("Por favor, rellene todos los campos.");
     return;
   }
 
-  // Find if an item with the same name and location already exists in the inventoryItems array
   const existingItemIndex = inventoryItems.value.findIndex(
     (item) => item.name === finalItemName && item.location === finalLocation
   );
 
   if (existingItemIndex !== -1) {
-    // If the item exists, update its quantity by adding the new amount
-    // We are directly modifying the reactive ref here.
     inventoryItems.value[existingItemIndex].quantity += quantity.value;
-    console.log(`Updated quantity for existing item: ${finalItemName}`);
-    // debugger;
   } else {
-    // If the item doesn't exist, create a new one as before
     const isNewIngredient = !ingredientList.value.some(
       (item) => item.name === finalItemName
     );
@@ -280,17 +264,14 @@ const handleFormSubmit = () => {
       unit: finalUnit,
       location: finalLocation,
     };
-    // Add the new item to the inventoryItems ref, triggering reactivity
     inventoryItems.value.push(newItem);
-    console.log(`Added new item: ${finalItemName}`);
   }
 
-  // Reset form state and close modal
   selectedIngredientName.value = "";
   newItemName.value = "";
   quantity.value = null;
   unit.value = "";
   location.value = "";
-  closeModal(); // Call the internal method to close the modal
+  closeModal();
 };
 </script>

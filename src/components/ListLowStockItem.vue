@@ -16,7 +16,6 @@
 </template>
   
 <script setup>
-import { defineProps } from 'vue';
 import AvatarWithInitial from './AvatarWithInitial.vue';
 // import { ChevronRightIcon } from '@heroicons/vue/24/solid'
 import ChevronRightIcon from './icons/ChevronRightIcon.vue';

@@ -2,7 +2,10 @@
   <BaseLayout title="Inventario">
     <!-- Header with 'Add New Item' Button and Quick Links -->
     <div class="grid grid-cols-2 gap-3 w-full items-center">
-      <InventoryQuickLinks @open-new-item-modal="openModal()" />
+      <InventoryQuickLinks
+        @open-new-item-modal="openNewItemModal"
+        @open-transfer-modal="openTransferModal"
+      />
     </div>
 
     <!-- Production Items Table -->
@@ -18,9 +21,13 @@
         </thead>
         <!-- Table Body -->
         <tbody>
-          <tr v-for="item in filteredProductionItems" :key="item.name" class="hover:bg-base-200 transition-colors duration-200">
+          <tr
+            v-for="item in filteredProductionItems"
+            :key="item.name"
+            class="hover:bg-base-200 transition-colors duration-200"
+          >
             <td>{{ item.name }}</td>
-            <td>{{ item.quantity + ' ' + item.unit }}</td>
+            <td>{{ item.quantity + " " + item.unit }}</td>
           </tr>
         </tbody>
       </table>
@@ -41,49 +48,67 @@
         </thead>
         <!-- Table Body -->
         <tbody>
-          <tr v-for="item in filteredRestaurantItems" :key="item.name" class="hover:bg-base-200 transition-colors duration-200">
+          <tr
+            v-for="item in filteredRestaurantItems"
+            :key="item.name"
+            class="hover:bg-base-200 transition-colors duration-200"
+          >
             <td>{{ item.name }}</td>
-            <td>{{ item.quantity + ' ' + item.unit }}</td>
+            <td>{{ item.quantity + " " + item.unit }}</td>
           </tr>
         </tbody>
       </table>
     </CardLayout>
-    <!-- Use a template ref to get a reference to the child component -->
-    <ModalNewItem ref="modalRef" :current-step="modalStep" @update-step="modalStep = $event" />
+
+    <!-- Modal for adding new items, now uses the prop-based approach -->
+    <ModalNewItem
+      :is-open="isNewItemModalOpen"
+      :current-step="modalStep"
+      @update-step="modalStep = $event"
+      @update:is-open="isNewItemModalOpen = $event"
+    />
+    
+    <!-- Modal for item transfers -->
+    <ItemTransferModal
+      :is-open="isTransferModalOpen"
+      @update:is-open="isTransferModalOpen = $event"
+    />
   </BaseLayout>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import BaseLayout from '../layouts/BaseLayout.vue';
-import InventoryQuickLinks from '../components/InventoryQuickLinks.vue';
-import CardLayout from '../layouts/CardLayout.vue';
-import ModalNewItem from '../components/ModalNewItem.vue';
-import { inventoryItems } from '../utils/stock';
+import { ref, computed } from "vue";
+import BaseLayout from "../layouts/BaseLayout.vue";
+import InventoryQuickLinks from "../components/InventoryQuickLinks.vue";
+import CardLayout from "../layouts/CardLayout.vue";
+import ModalNewItem from "../components/ModalNewItem.vue";
+import ItemTransferModal from "../components/ItemTransferModal.vue";
+import { inventoryItems } from "../utils/stock";
 
-// Create a template ref to get a reference to the ModalNewItem component instance
-const modalRef = ref(null);
+// Reactive state to control the visibility of the new item modal
+const isNewItemModalOpen = ref(false);
+const modalStep = ref("options");
 
-// Reactive state to handle the steps inside the modal
-const modalStep = ref('options');
+// Reactive state to control the visibility of the transfer modal
+const isTransferModalOpen = ref(false);
 
-// This function will now call the 'openModal' method on the child component
-const openModal = () => {
-  if (modalRef.value) {
-    modalRef.value.openModal();
-  }
+// This function is now much simpler. It just toggles the state variable.
+const openNewItemModal = () => {
+  isNewItemModalOpen.value = true;
 };
 
-// Use a computed property to filter production items from the single source of truth
+// This function is the same as before.
+const openTransferModal = () => {
+  isTransferModalOpen.value = true;
+};
+
 const filteredProductionItems = computed(() => {
-  return inventoryItems.value.filter(item => item.location === 'production');
+  return inventoryItems.value.filter((item) => item.location === "production");
 });
 
-// Use a computed property to filter restaurant items from the single source of truth
 const filteredRestaurantItems = computed(() => {
-  return inventoryItems.value.filter(item => item.location === 'restaurant');
+  return inventoryItems.value.filter((item) => item.location === "restaurant");
 });
-
 </script>
 
 <style scoped>
