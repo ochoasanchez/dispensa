@@ -5,6 +5,7 @@
       <InventoryQuickLinks
         @open-new-item-modal="openNewItemModal"
         @open-transfer-modal="openTransferModal"
+        @open-closure-modal="openClosureModal"
       />
     </div>
 
@@ -73,6 +74,11 @@
       :is-open="isTransferModalOpen"
       @update:is-open="isTransferModalOpen = $event"
     />
+
+    <!-- Modal for inventory closure -->
+    <InventoryClosureModal
+      :is-open="isClosureModalOpen"
+      @update:is-open="isClosureModalOpen = $event" />
   </BaseLayout>
 </template>
 
@@ -83,14 +89,14 @@ import InventoryQuickLinks from "../components/InventoryQuickLinks.vue";
 import CardLayout from "../layouts/CardLayout.vue";
 import ModalNewItem from "../components/ModalNewItem.vue";
 import ItemTransferModal from "../components/ItemTransferModal.vue";
+import InventoryClosureModal from '../components/InventoryClosureModal.vue';
 import { inventoryItems } from "../utils/stock";
 
-// Reactive state to control the visibility of the new item modal
+// Init modal control variables
 const isNewItemModalOpen = ref(false);
 const modalStep = ref("options");
-
-// Reactive state to control the visibility of the transfer modal
 const isTransferModalOpen = ref(false);
+const isClosureModalOpen = ref(false);
 
 // This function is now much simpler. It just toggles the state variable.
 const openNewItemModal = () => {
@@ -101,6 +107,12 @@ const openNewItemModal = () => {
 const openTransferModal = () => {
   isTransferModalOpen.value = true;
 };
+
+const openClosureModal = () => {
+  isClosureModalOpen.value = true;
+};
+
+
 
 const filteredProductionItems = computed(() => {
   return inventoryItems.value.filter((item) => item.location === "production");
