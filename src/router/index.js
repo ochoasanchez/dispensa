@@ -3,6 +3,7 @@ import Login from '../views/Login.vue';
 import Home from '../views/Home.vue';
 import ItemDetails from '../views/ItemDetails.vue';
 import Inventory from '../views/Inventory.vue';
+import Reports from '../views/Reports.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,7 +28,11 @@ const router = createRouter({
       name: 'item',
       component: ItemDetails
     },
-    // You can add more routes here later
+    {
+      path: '/reports',
+      name: 'reports',
+      component: Reports
+    },
     {
       path: '/',
       redirect: '/login' // Redirect root to login

@@ -5,8 +5,8 @@
       </div>
       <div>
         <div>{{ item.name }}</div>
-        <div class="text-xs uppercase font-semibold opacity-60">
-          {{ item.reason }}
+        <div class="text-xs uppercase font-bold text-red-600">
+          {{ item.quantity }} {{ item.unit }} 
         </div>
       </div>
       <router-link :to="{ name: 'item' }" class="btn btn-square btn-ghost">

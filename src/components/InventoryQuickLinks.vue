@@ -12,7 +12,7 @@
       <InventoryIcon class="size-8" />
     </CardQuickLink>
   
-    <CardQuickLink color="primary" title="Reportes">
+    <CardQuickLink color="primary" title="Reportes" url="reports">
       <ReportsIcon class="size-8" />
     </CardQuickLink>
   </template>

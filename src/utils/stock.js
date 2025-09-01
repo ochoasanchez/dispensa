@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 // A simple counter for generating unique IDs for the inventory entries
 let nextId = 1;
@@ -19,7 +19,6 @@ export const ingredientList = ref([
 ]);
 
 // Single source of truth for all inventory items
-// We'll also update this to be a ref
 export const inventoryItems = ref([
   { id: nextId++, name: 'Harina de trigo', quantity: 50, unit: 'kg', location: 'production' },
   { id: nextId++, name: 'Azúcar', quantity: 25, unit: 'kg', location: 'production' },
@@ -33,29 +32,34 @@ export const inventoryItems = ref([
   { id: nextId++, name: 'Pan de ajo', quantity: 30, unit: 'unites', location: 'restaurant' },
 ]);
 
+// Production Items (now a reactive computed property)
+export const productionItems = computed(() => {
+  return inventoryItems.value
+    .filter(item => item.location === 'production')
+    .map(item => {
+      const { location, ...rest } = item;
+      return rest;
+    });
+});
 
-// Production Items
-export const productionItems = inventoryItems.value
-  .filter(item => item.location === 'production')
-  .map(item => {
-    const { location, ...rest } = item;
-    return rest;
-  });
+// Restaurant Items (now a reactive computed property)
+export const restaurantItems = computed(() => {
+  return inventoryItems.value
+    .filter(item => item.location === 'restaurant')
+    .map(item => {
+      const { location, ...rest } = item;
+      return rest;
+    });
+});
 
-// Restaurant Items
-export const restaurantItems = inventoryItems.value
-  .filter(item => item.location === 'restaurant')
-  .map(item => {
-    const { location, ...rest } = item;
-    return rest;
-  });
-
-// You will also need to update your lowStock lists to also be refs, 
-// so they are reactive if you want to update them later.
+// Low stock items for the restaurant, now populated manually
 export const lowStockRestaurant = ref([
-  // ... your lowStockRestaurant items
+  { id: 7, name: 'Queso Parmesano', quantity: 5, unit: 'kg', location: 'restaurant', color: 'yellow', initials: 'QP' },
+  { id: 9, name: 'Salmón', quantity: 8, unit: 'kg', location: 'restaurant', color: 'pink', initials: 'SLM' },
 ]);
 
-export const lowStockProductionHouse = ref([
-  // ... your lowStockProductionHouse items
+// Low stock items for the production base, now populated manually
+export const lowStockProductionBase = ref([
+  { id: 5, name: 'Albahaca fresca', quantity: 2, unit: 'atados', location: 'production', color: 'green', initials: 'ALB' },
+  { id: 3, name: 'Aceite de oliva', quantity: 10, unit: 'litros', location: 'production', color: 'lime', initials: 'OLI' },
 ]);
